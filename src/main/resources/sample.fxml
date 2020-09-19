@@ -40,22 +40,12 @@
                            <children>
                               <Label text="Product Name">
                                  <padding>
-                                    <Insets bottom="38.0" left="30.0" />
+                                    <Insets left="30.0" />
                                  </padding>
-                              </Label>
-                              <Label text="Product Name" GridPane.columnIndex="1">
-                                 <GridPane.margin>
-                                    <Insets bottom="38.0" left="30.0" />
-                                 </GridPane.margin>
                               </Label>
                               <Label text="Manufacturer" GridPane.rowIndex="1">
                                  <padding>
-                                    <Insets bottom="38.0" left="33.0" />
-                                 </padding>
-                              </Label>
-                              <Label text="Manufacturer" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                 <padding>
-                                    <Insets bottom="38.0" left="33.0" />
+                                    <Insets left="33.0" />
                                  </padding>
                               </Label>
                               <Label text="Item Type" GridPane.rowIndex="2">
@@ -63,47 +53,27 @@
                                     <Insets />
                                  </GridPane.margin>
                                  <padding>
-                                    <Insets bottom="38.0" left="41.0" />
+                                    <Insets left="41.0" />
                                  </padding>
                               </Label>
-                              <Label text="Item Type" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <padding>
-                                    <Insets bottom="38.0" left="41.0" />
-                                 </padding>
-                              </Label>
-                              <TextField prefHeight="19.0" prefWidth="125.0" scaleX="0.75">
+                              <TextField fx:id="txtProductName" scaleX="0.75" GridPane.columnIndex="1">
                                  <GridPane.margin>
-                                    <Insets top="20.0" />
+                                    <Insets />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField scaleX="0.75" GridPane.columnIndex="1">
+                              <TextField fx:id="txtManufacturer" scaleX="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <GridPane.margin>
-                                    <Insets top="20.0" />
+                                    <Insets />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField scaleX="0.75" GridPane.rowIndex="1">
+                              <ChoiceBox fx:id="choiceItemType" prefWidth="150.0" scaleX="0.75" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <GridPane.margin>
-                                    <Insets top="20.0" />
-                                 </GridPane.margin>
-                              </TextField>
-                              <TextField scaleX="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                 <GridPane.margin>
-                                    <Insets top="20.0" />
-                                 </GridPane.margin>
-                              </TextField>
-                              <ChoiceBox prefWidth="150.0" scaleX="0.75" GridPane.rowIndex="2">
-                                 <GridPane.margin>
-                                    <Insets top="20.0" />
-                                 </GridPane.margin>
-                              </ChoiceBox>
-                              <ChoiceBox prefWidth="150.0" scaleX="0.75" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <GridPane.margin>
-                                    <Insets top="20.0" />
+                                    <Insets />
                                  </GridPane.margin>
                               </ChoiceBox>
                            </children>
                         </GridPane>
-                        <Button layoutX="104.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Add Product" />
+                        <Button layoutX="104.0" layoutY="20.0" mnemonicParsing="false" onAction="#addProductButtonPush" text="Add Product" />
                         <TableView layoutX="55.0" layoutY="268.0" prefHeight="200.0" prefWidth="200.0">
                           <columns>
                             <TableColumn prefWidth="75.0" text="C1" />
@@ -122,7 +92,7 @@
                         <Label layoutX="106.0" layoutY="14.0" text="Choose Product" />
                         <ListView layoutX="55.0" layoutY="41.0" prefHeight="200.0" prefWidth="200.0" />
                         <Label layoutX="104.0" layoutY="262.0" text="Choose Quantity" />
-                        <ComboBox layoutX="81.0" layoutY="286.0" prefWidth="150.0" />
+                        <ComboBox fx:id="cmbQuantity" layoutX="81.0" layoutY="286.0" prefWidth="150.0" />
                         <Button layoutX="89.0" layoutY="351.0" mnemonicParsing="false" onAction="#recordProductionButton" text="Record Production" />
                      </children></AnchorPane>
             </content>
