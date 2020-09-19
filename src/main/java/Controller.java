@@ -15,9 +15,17 @@ public class Controller {
 
     @FXML
     private void addProductButtonPush(ActionEvent event) {
+        //Use these values for printing new item added to Console
+        //Items with same names are used in connectToDB for adding to
+        //the database..UNCOMMENT BELOW ITEMS TO USE THIS FEATURE
+        //String productName = txtProductName.getText();
+       // String itemType = choiceItemType.getValue();
+       // String manufacturer = txtManufacturer.getText();
+
         // ADD PRODUCT Button was clicked, do something...
-        System.out.print("The ADD PRODUCT Button Works \n");
+        System.out.print("A Product has been added to the database \n");
         connectToDb();
+        //System.out.print("The Product Name is: " +productName+ "\nThe Product Manufacturer is: "+manufacturer+"\nThe Product Type is: "+itemType+"\n\n");
     }
 
     @FXML
@@ -68,6 +76,10 @@ public class Controller {
         Connection conn = null;
         Statement stmt = null;
 
+        String productName = txtProductName.getText();
+        String itemType = choiceItemType.getValue();
+        String manufacturer = txtManufacturer.getText();
+
         try {
             // STEP 1: Register JDBC driver
             Class.forName(JDBC_DRIVER);
@@ -78,9 +90,21 @@ public class Controller {
             //STEP 3: Execute a query
             stmt = conn.createStatement();
 
-            String insertSql = "INSERT INTO Product(TYPE, MANUFACTURER, NAME ) VALUES('AUDIO','APPLE','iPod')";
+            String insertSql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+productName+"','"+itemType+"','"+manufacturer+"')";
 
             stmt.executeUpdate(insertSql);
+
+            //use code below to print the entire PRODUCT database's contents to the console
+            ResultSet rs = stmt.executeQuery("select * from product");
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            //iterate through ResultSet to get all columns' data:
+            while (rs.next()) {
+                for(int i = 1; i < columnsNumber; i++)
+                    System.out.print(rs.getString(i) + " ");
+                System.out.println();
+            }
 
             // STEP 4: Clean-up environment
             stmt.close();
