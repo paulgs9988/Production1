@@ -5,22 +5,52 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.awt.*;
 import java.sql.*;
+import java.util.ArrayList;
 
 
-public class Controller {
+public class Controller implements Item{
+    @Override
+    public int getInt() {
+        return 0;
+    }
 
-    //Array for populating drop down menu on Product Line tab:
-    public String[] itemTypeArray = {"AUDIO", "VIDEO", "COMPUTER", "WATCH"};
+    @Override
+    public void setName(String name) {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public void setManufacturer(String manufacturer) {
+
+    }
+
+    @Override
+    public String getManufacturer() {
+        return null;
+    }
+
+    //Originally a String array was used for the Product Tab's choice box, as follows:
+    //public String[] itemTypeArray = {"AUDIO", "VIDEO", "COMPUTER", "WATCH"};
+
+    //The array was replaced with an enum, ItemType
 
     @FXML
     private void addProductButtonPush(ActionEvent event) {
-        //Use these values for printing new item added to Console
-        //Items with same names are used in connectToDB for adding to
-        //the database..UNCOMMENT BELOW ITEMS TO USE THIS FEATURE
-        //String productName = txtProductName.getText();
-       // String itemType = choiceItemType.getValue();
-       // String manufacturer = txtManufacturer.getText();
+        /* Use these values for printing new item added to Console.
+           Items with same names are used in connectToDB for adding to
+           the database..UNCOMMENT BELOW ITEMS TO USE THIS FEATURE
+
+           String productName = txtProductName.getText();
+           String itemType = choiceItemType.getValue();
+           String manufacturer = txtManufacturer.getText();
+        */
 
         // ADD PRODUCT Button was clicked, do something...
         System.out.print("A Product has been added to the database \n");
@@ -47,9 +77,21 @@ public class Controller {
 
     public void initialize(){
 
-        //Populate Product Tab drop menu using items in itemArrayType:
-        for(int i = 0; i < itemTypeArray.length; i++) {
-            choiceItemType.getItems().add(itemTypeArray[i]);
+        //POPULATE THE PRODUCT TAB'S CHOICE BOX (DROP MENU) USING itemType ENUM:
+
+                //(Originally I used an array with the following logic:
+
+                    /*for(int i = 0; i < itemTypeArray.length; i++) {
+                    //    choiceItemType.getItems().add(itemTypeArray[i]);}
+                    */
+
+        /*  choiceItemType refers to the Item Type Choice Box. This ENHANCED FOR LOOP
+            allows us to add each enum item using .getItems().addAll(). We must then
+            use the .toString() method to pass a String argument.
+        */
+        for(ItemType itemMenu: ItemType.values()){
+
+            choiceItemType.getItems().addAll(itemMenu.toString());
         }
 
         //Allow users to enter their own value into Produce Tab ComboBox:
@@ -80,6 +122,17 @@ public class Controller {
         String itemType = choiceItemType.getValue();
         String manufacturer = txtManufacturer.getText();
 
+        Widget iPad = new Widget(productName,manufacturer,itemType);
+
+        ArrayList<Widget> widgets = new ArrayList<Widget>();
+        widgets.add(iPad);
+
+
+
+
+
+
+
         try {
             // STEP 1: Register JDBC driver
             Class.forName(JDBC_DRIVER);
@@ -90,9 +143,23 @@ public class Controller {
             //STEP 3: Execute a query
             stmt = conn.createStatement();
 
-            String insertSql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+productName+"','"+itemType+"','"+manufacturer+"')";
+            //String insertSql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+productName+"','"+itemType+"','"+manufacturer+"')";
 
-            stmt.executeUpdate(insertSql);
+            String insertSqlps = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES(?,?,?)";
+
+
+            PreparedStatement ps = conn.prepareStatement(insertSqlps);
+
+            ps.setString(1, productName);
+            ps.setString(2,itemType);
+            ps.setString(3,manufacturer);
+
+
+            //String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+iPad.getName()+"','"+iPad.getType()+"','"+iPad.getManufacturer()+"')";
+
+            //stmt.executeUpdate(insertSql);
+            //stmt.executeUpdate(sql);
+            ps.executeUpdate();
 
             //use code below to print the entire PRODUCT database's contents to the console
             ResultSet rs = stmt.executeQuery("select * from product");
@@ -106,6 +173,8 @@ public class Controller {
                 System.out.println();
             }
 
+            System.out.println(widgets.get(0).toString());
+
             // STEP 4: Clean-up environment
             stmt.close();
             conn.close();
@@ -118,3 +187,5 @@ public class Controller {
     }
 
 }
+
+
