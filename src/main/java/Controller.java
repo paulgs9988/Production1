@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 
-public class Controller implements Item{
+public class Controller<choiceItemType> implements Item{
     @Override
     public int getInt() {
         return 0;
@@ -73,7 +73,7 @@ public class Controller implements Item{
     private TextField txtManufacturer;
 
     @FXML
-    private ChoiceBox<String> choiceItemType;
+    private ChoiceBox<Enum> choiceItemType;
 
     public void initialize(){
 
@@ -86,12 +86,11 @@ public class Controller implements Item{
                     */
 
         /*  choiceItemType refers to the Item Type Choice Box. This ENHANCED FOR LOOP
-            allows us to add each enum item using .getItems().addAll(). We must then
-            use the .toString() method to pass a String argument.
+            allows us to add each enum item using .getItems().addAll().
         */
         for(ItemType itemMenu: ItemType.values()){
 
-            choiceItemType.getItems().addAll(itemMenu.toString());
+            choiceItemType.getItems().addAll(itemMenu);
         }
 
         //Allow users to enter their own value into Produce Tab ComboBox:
@@ -119,7 +118,7 @@ public class Controller implements Item{
         Statement stmt = null;
 
         String productName = txtProductName.getText();
-        String itemType = choiceItemType.getValue();
+        ItemType itemType = (ItemType) choiceItemType.getValue();
         String manufacturer = txtManufacturer.getText();
 
         Widget iPad = new Widget(productName,manufacturer,itemType);
@@ -151,7 +150,7 @@ public class Controller implements Item{
             PreparedStatement ps = conn.prepareStatement(insertSqlps);
 
             ps.setString(1, productName);
-            ps.setString(2,itemType);
+            ps.setString(2, String.valueOf(itemType));
             ps.setString(3,manufacturer);
 
 

@@ -1,13 +1,13 @@
 abstract public class Product implements Item {
     public int id;
-    public String type;
+    public ItemType type;
     public String manufacturer;
     public String name;
 
     public Product(){
 
     }
-    public Product(String name, String manufacturer, String type){
+    public Product(String name, String manufacturer, ItemType type){
         this.name = name;
         this.manufacturer = manufacturer;
         this.type = type;

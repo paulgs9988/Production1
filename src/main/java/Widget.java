@@ -1,13 +1,13 @@
 public class Widget extends Product{
 
-    public Widget(String name, String manufacturer, String type){
+    public Widget(String name, String manufacturer, ItemType type){
         super(name, manufacturer, type);
 
     }
-    public String getType(){
+    public ItemType getType(){
         return this.type;
     }
-    public void setType(String type){
+    public void setType(ItemType type){
         this.type = type;
     }
 }
