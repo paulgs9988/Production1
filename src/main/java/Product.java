@@ -19,6 +19,7 @@ abstract public class Product implements Item {
     public String toString(){
         return "Name: "+this.name+"\nManufacturer: "+this.manufacturer+"\nType: "+this.type;
     }
+
     @Override
     public int getInt() {
         return this.id;

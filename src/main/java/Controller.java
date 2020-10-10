@@ -75,6 +75,24 @@ public class Controller<choiceItemType> implements Item{
     @FXML
     private ChoiceBox<Enum> choiceItemType;
 
+    public static void testMultimedia() {
+        AudioPlayer newAudioProduct = new AudioPlayer("DP-X1A", "Onkyo",
+                "DSD/FLAC/ALAC/WAV/AIFF/MQA/Ogg-Vorbis/MP3/AAC", "M3U/PLS/WPL");
+        Screen newScreen = new Screen("720x480", 40, 22);
+        MoviePlayer newMovieProduct = new MoviePlayer("DBPOWER MK101", "OracleProduction", newScreen,
+                MonitorType.LCD);
+        ArrayList<MultimediaControl> productList = new ArrayList<MultimediaControl>();
+        productList.add(newAudioProduct);
+        productList.add(newMovieProduct);
+        for (MultimediaControl p : productList) {
+            System.out.println(p);
+            p.play();
+            p.stop();
+            p.next();
+            p.previous();
+        }
+    }
+
     public void initialize(){
 
         //POPULATE THE PRODUCT TAB'S CHOICE BOX (DROP MENU) USING itemType ENUM:
@@ -103,6 +121,8 @@ public class Controller<choiceItemType> implements Item{
         //Default Produce Tab ComboBox to 1:
         cmbQuantity.getSelectionModel().selectFirst();
 
+        testMultimedia();
+
     }
 
     public void connectToDb(){
@@ -120,6 +140,7 @@ public class Controller<choiceItemType> implements Item{
         String productName = txtProductName.getText();
         ItemType itemType = (ItemType) choiceItemType.getValue();
         String manufacturer = txtManufacturer.getText();
+        
 
         Widget iPad = new Widget(productName,manufacturer,itemType);
 
