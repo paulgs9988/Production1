@@ -4,6 +4,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 
 import java.awt.*;
 import java.sql.*;
@@ -75,6 +76,11 @@ public class Controller<choiceItemType> implements Item{
     @FXML
     private ChoiceBox<Enum> choiceItemType;
 
+    @FXML
+    private TextArea productionLogTxt;
+
+    //use polymorphism to test multimedia devices. An ArrayList of type interface (MultimediaControl) is used to populate
+    //an ArrayList of AudioPlayers and MoviePlayers
     public static void testMultimedia() {
         AudioPlayer newAudioProduct = new AudioPlayer("DP-X1A", "Onkyo",
                 "DSD/FLAC/ALAC/WAV/AIFF/MQA/Ogg-Vorbis/MP3/AAC", "M3U/PLS/WPL");
@@ -122,6 +128,12 @@ public class Controller<choiceItemType> implements Item{
         cmbQuantity.getSelectionModel().selectFirst();
 
         testMultimedia();
+
+        //test ProductionRecord printing to Product Log Text area with default Production Record object
+        ProductionRecord productionRecordTest = new ProductionRecord(0);
+
+        productionLogTxt.setText(productionRecordTest.toString());
+
 
     }
 
