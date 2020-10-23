@@ -64,23 +64,28 @@ public class Controller<choiceItemType> implements Item{
         System.out.print("the RECORD PRODUCTION Button Works \n");
     }
 
+    //Produce Tab's "Choose Quantity" drop menu
     @FXML
     private ComboBox<String> cmbQuantity;
 
+    //Product Line Tab's "Product Name" text box
     @FXML
     private TextField txtProductName;
 
+    //Product Line Tab's "manufacturer" text box
     @FXML
     private TextField txtManufacturer;
 
+    //this refers to the Product Line Tab's "Item Type" drop menu
     @FXML
     private ChoiceBox<Enum> choiceItemType;
 
+    //this refers to the Production Log Tab's Text Area
     @FXML
     private TextArea productionLogTxt;
 
-    //use polymorphism to test multimedia devices. An ArrayList of type interface (MultimediaControl) is used to populate
-    //an ArrayList of AudioPlayers and MoviePlayers
+    //Use polymorphism to test multimedia devices. An ArrayList of type interface (MultimediaControl) is used to populate
+    //an ArrayList of AudioPlayers and MoviePlayers. Currently this test just prints to the Console.
     public static void testMultimedia() {
         AudioPlayer newAudioProduct = new AudioPlayer("DP-X1A", "Onkyo",
                 "DSD/FLAC/ALAC/WAV/AIFF/MQA/Ogg-Vorbis/MP3/AAC", "M3U/PLS/WPL");
@@ -99,6 +104,8 @@ public class Controller<choiceItemType> implements Item{
         }
     }
 
+    //Method used to "initialize" the FX features (i.e. populate drop menus, print tests to
+    //text areas, etc)
     public void initialize(){
 
         //POPULATE THE PRODUCT TAB'S CHOICE BOX (DROP MENU) USING itemType ENUM:
@@ -127,6 +134,7 @@ public class Controller<choiceItemType> implements Item{
         //Default Produce Tab ComboBox to 1:
         cmbQuantity.getSelectionModel().selectFirst();
 
+        //call testMultiMedia message which currently prints to the Console
         testMultimedia();
 
         //test ProductionRecord printing to Product Log Text area with default Production Record object

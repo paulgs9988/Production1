@@ -14,6 +14,9 @@ abstract public class Product implements Item {
     }
 
 
+    public ItemType getItemType(){
+        return this.type;
+    }
 
     @Override
     public String toString(){
