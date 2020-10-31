@@ -7,7 +7,7 @@ public class ProductionRecord {
     private int productID;
     private String serialNumber;
     private Date dateProduced;
-    //private int typeCount;
+    private int itemCount;
 
     //constructor
     public ProductionRecord(int productID){
@@ -18,6 +18,7 @@ public class ProductionRecord {
     //overloaded constructor. "itemCount" holds the count of the number of items
     // of its type "product" that have been created
     public ProductionRecord(Product product, int itemCount){
+        this.productionNumber = itemCount;
         String serialGeneration = "";
 
         //set first three characters of serial number to first 3 of manufacturer:

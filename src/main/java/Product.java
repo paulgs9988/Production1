@@ -1,8 +1,8 @@
 abstract public class Product implements Item {
     public int id;
+    public String name;
     public ItemType type;
     public String manufacturer;
-    public String name;
 
     public Product(){
 
