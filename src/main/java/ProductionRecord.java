@@ -8,6 +8,7 @@ public class ProductionRecord {
     private String serialNumber;
     private Date dateProduced;
     private int itemCount;
+    private Product product;
 
     //constructor
     public ProductionRecord(int productID){
@@ -18,7 +19,9 @@ public class ProductionRecord {
     //overloaded constructor. "itemCount" holds the count of the number of items
     // of its type "product" that have been created
     public ProductionRecord(Product product, int itemCount){
+        this.product = product;
         this.productionNumber = itemCount;
+        this.productID = product.getID();
         String serialGeneration = "";
 
         //set first three characters of serial number to first 3 of manufacturer:
@@ -66,6 +69,12 @@ public class ProductionRecord {
     }
 
     //Accessors and mutators for all fields below
+    public Product getProduct(){
+        return this.product;
+    }
+    public void setProduct(Product product){
+        this.product = product;
+    }
     public void setProductionNumber(int productionNumber){
         this.productionNumber = productionNumber;
     }
@@ -102,4 +111,9 @@ public class ProductionRecord {
         //"Prod. Num: 0 Product ID: 0 Serial Num: 0 Date: Mon Oct 14 10:29:48 UTC 2019"
         return "Prod. Num: "+productionNumber+" Product ID: "+productID+" Serial Num: "+serialNumber+" Date: "+dateProduced;
     }
+
+    public String showProduction(String productName){
+        return "Prod. Num: "+productionNumber+" Product Name: "+productName+" Serial Num: "+serialNumber+" Date: "+dateProduced;
+    }
+
 }

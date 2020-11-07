@@ -24,7 +24,7 @@ abstract public class Product implements Item {
     }
 
     @Override
-    public int getInt() {
+    public int getID() {
         return this.id;
     }
 

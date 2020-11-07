@@ -1,7 +1,7 @@
 public interface Item {
 
 
-    int getInt();
+    int getID();
     void setName(String name);
     String getName();
     void setManufacturer(String manufacturer);

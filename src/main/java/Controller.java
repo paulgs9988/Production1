@@ -24,10 +24,10 @@ public class Controller<choiceItemType> implements Item{
     private ObservableList<Product> productLine = FXCollections.observableArrayList();
     private ObservableList<Product> productArray = FXCollections.observableArrayList();
     //private ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
-    private ArrayList<ProductionRecord> productionLog = new ArrayList<ProductionRecord>();
+    //private ArrayList<ProductionRecord> productionLog = new ArrayList<ProductionRecord>();
 
     @Override
-    public int getInt() {
+    public int getID() {
         return 0;
     }
 
@@ -52,6 +52,12 @@ public class Controller<choiceItemType> implements Item{
     }
     //end overriding of interface Item's methods
 
+    /* *************************************************************************************************
+    FXML ITEMS:
+    Summary: The following area holds the code that refers to FXML actions/items (i.e. items in the GUI
+             like buttons, text areas, combo boxes, etc)
+    ************************************************************************************************* */
+
     @FXML
     private void addProductButtonPush(ActionEvent event) {
         // ADD PRODUCT Button was clicked, do something...
@@ -75,50 +81,43 @@ public class Controller<choiceItemType> implements Item{
         produceListView.setItems(productArray);
     }
 
-    public void populateArrays(){
-        /* This method populates the productArray ObservableList by going to the Product database and adding each
-        product to the ObservableList
-         */
+    //Produce Tab's "Choose Quantity" drop menu
+    @FXML
+    private ComboBox<String> cmbQuantity;
 
-        //Make sure to use correct database name from res folder (i.e. 'productiondb')
-        final String JDBC_DRIVER = "org.h2.Driver";
-        final String DB_URL = "jdbc:h2:./res/productiondb";
+    //Product Line Tab's "Product Name" text box
+    @FXML
+    private TextField txtProductName;
 
-        //  Database credentials
-        final String USER = "";
-        final String PASS = "";
-        Connection conn = null;
-        Statement stmt = null;
+    //Product Line Tab's "manufacturer" text box
+    @FXML
+    private TextField txtManufacturer;
 
-        try {
-            // STEP 1: Register JDBC driver
-            Class.forName(JDBC_DRIVER);
+    //this refers to the Product Line Tab's "Item Type" drop menu
+    @FXML
+    private ChoiceBox<Enum> choiceItemType;
 
-            //STEP 2: Open a connection
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+    //this refers to the Production Log Tab's Text Area
+    @FXML
+    private TextArea productionLogTxt;
 
-            //STEP 3: Execute a query
-            stmt = conn.createStatement();
+    @FXML
+    private TableView<Product> existingProductTableView;
+    //The following tagged was used for the deleted "Product ID" column on Product Line's TableView
+    //@FXML
+    //private TableColumn<?,?> productIdColumn;
 
-            //use code below to print the entire PRODUCT database's contents to the console
-            ResultSet rs = stmt.executeQuery("select * from product");
+    @FXML
+    private TableColumn<?, ?> productNameColumn;
 
-            while (rs.next()) {
-                productArray.add(new Widget(rs.getString(2),rs.getString(4),ItemType.valueOf(rs.getString(3))));
-            }
+    @FXML
+    private TableColumn<?, ?> productManufacturerColumn;
 
+    @FXML
+    private TableColumn<?, ?> productTypeColumn;
 
-            // STEP 4: Clean-up environment
-            stmt.close();
-            conn.close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    @FXML
+    private ListView<Product> produceListView;
 
     @FXML
     private void recordProductionButton(ActionEvent event){
@@ -150,10 +149,18 @@ public class Controller<choiceItemType> implements Item{
 
     }
 
+    /* *************************************************************************************************
+    Methods Not Related to FXML:
+    Summary: The following area holds code for the various logical/"backend" methods that do things
+             like populate arrays, make database queries, code for displays, etc
+    ************************************************************************************************* */
+
     public void loadProductionLog(){
-        /* This method populates the productArray ObservableList by going to the Product database and adding each
-        product to the ObservableList
+        /* This method creates and populates the productionLog ArrayList by going to the
+        ProductRecord database and adding each ProductionRecord item to the ArrayList
          */
+
+        ArrayList<ProductionRecord> productionLog = new ArrayList<ProductionRecord>();
 
         //Make sure to use correct database name from res folder (i.e. 'productiondb')
         final String JDBC_DRIVER = "org.h2.Driver";
@@ -197,7 +204,6 @@ public class Controller<choiceItemType> implements Item{
     }
     public void addToProductionDB(ArrayList<ProductionRecord> productionRun){
 
-
             //Make sure to use correct database name from res folder (i.e. 'productiondb')
             final String JDBC_DRIVER = "org.h2.Driver";
             final String DB_URL = "jdbc:h2:./res/productiondb";
@@ -207,8 +213,6 @@ public class Controller<choiceItemType> implements Item{
             final String PASS = "";
             Connection conn = null;
             Statement stmt = null;
-
-
 
             try {
                 // STEP 1: Register JDBC driver
@@ -231,6 +235,8 @@ public class Controller<choiceItemType> implements Item{
 
                     String insertSql = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES('"+productionNumber+"','"+productionID+"','"+serialNumber+"','"+ts+"')";
 
+                    //Use the following commented out code if a Prepared Statement is preferable for accomplishing this insertion
+
                     //String insertSqlps = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES(?,?,?,?)";
 
 
@@ -240,7 +246,6 @@ public class Controller<choiceItemType> implements Item{
                     //ps.setString(2, String.valueOf(productionID));
                     //ps.setString(3, serialNumber);
                     //ps.setString(4, dateProduced.toString());
-
 
                     //String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+iPad.getName()+"','"+iPad.getType()+"','"+iPad.getManufacturer()+"')";
 
@@ -261,49 +266,22 @@ public class Controller<choiceItemType> implements Item{
 
     }
     public void showProduction(ArrayList<ProductionRecord> productionLog){
-        //productionLogTxt.clear();
-        for(ProductionRecord pr : productionLog){
-            productionLogTxt.appendText(pr.toString()+"\n");
+        productionLogTxt.clear();
+        //String nameForPrint = "";
+        for(ProductionRecord pr : productionLog) {
+            //The logic in this nested loop is for garnering the Product's name from the
+            //productArray ArrayList and printing it to the Production Record text area.
+
+            String nameForPrint = null;
+            for (int i = 0; i < productArray.size(); i++) {
+                if (productArray.get(i).getID() == pr.getProductID()) {
+                    nameForPrint = productArray.get(i).getName();
+                }
+            }
+            productionLogTxt.appendText(pr.showProduction(nameForPrint) + "\n");
+
         }
     }
-
-    //Produce Tab's "Choose Quantity" drop menu
-    @FXML
-    private ComboBox<String> cmbQuantity;
-
-    //Product Line Tab's "Product Name" text box
-    @FXML
-    private TextField txtProductName;
-
-    //Product Line Tab's "manufacturer" text box
-    @FXML
-    private TextField txtManufacturer;
-
-    //this refers to the Product Line Tab's "Item Type" drop menu
-    @FXML
-    private ChoiceBox<Enum> choiceItemType;
-
-    //this refers to the Production Log Tab's Text Area
-    @FXML
-    private TextArea productionLogTxt;
-
-    @FXML
-    private TableView<Product> existingProductTableView;
-    //The following tagged was used for the deleted "Product ID" column on Product Line's TableView
-    //@FXML
-    //private TableColumn<?,?> productIdColumn;
-
-    @FXML
-    private TableColumn<?, ?> productNameColumn;
-
-    @FXML
-    private TableColumn<?, ?> productManufacturerColumn;
-
-    @FXML
-    private TableColumn<?, ?> productTypeColumn;
-
-    @FXML
-    private ListView<Product> produceListView;
 
 
     //Use polymorphism to test multimedia devices. An ArrayList of type interface (MultimediaControl) is used to populate
@@ -323,6 +301,50 @@ public class Controller<choiceItemType> implements Item{
             p.stop();
             p.next();
             p.previous();
+        }
+    }
+
+    public void populateArrays(){
+        /* This method populates the productArray ObservableList by going to the Product database and adding each
+        product to the ObservableList
+         */
+
+        //Make sure to use correct database name from res folder (i.e. 'productiondb')
+        final String JDBC_DRIVER = "org.h2.Driver";
+        final String DB_URL = "jdbc:h2:./res/productiondb";
+
+        //  Database credentials
+        final String USER = "";
+        final String PASS = "";
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            // STEP 1: Register JDBC driver
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 2: Open a connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            //STEP 3: Execute a query
+            stmt = conn.createStatement();
+
+            //use code below to print the entire PRODUCT database's contents to the console
+            ResultSet rs = stmt.executeQuery("select * from product");
+
+            while (rs.next()) {
+                productArray.add(new Widget(rs.getInt(1),rs.getString(2),rs.getString(4),ItemType.valueOf(rs.getString(3))));
+            }
+
+
+            // STEP 4: Clean-up environment
+            stmt.close();
+            conn.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -351,13 +373,6 @@ public class Controller<choiceItemType> implements Item{
         loadProductList();
         loadProductionLog();
 
-
-        //POPULATE THE PRODUCT TAB'S CHOICE BOX (DROP MENU) USING itemType ENUM:
-
-
-        /*  choiceItemType refers to the Item Type Choice Box. This ENHANCED FOR LOOP
-            allows us to add each enum item using .getItems().addAll().
-        */
         for(ItemType itemMenu: ItemType.values()){
 
             choiceItemType.getItems().addAll(itemMenu);
@@ -378,13 +393,6 @@ public class Controller<choiceItemType> implements Item{
 
         //test ProductionRecord printing to Product Log Text area with default Production Record object
         ProductionRecord productionRecordTest = new ProductionRecord(0);
-
-        //Below is the initial test to make sure text can print to the Production Log Text Area (using the
-        //ProductionRecord class's toString method
-        //productionLogTxt.setText(productionRecordTest.toString());
-
-        //Now we will use the productLine ObservableList to populate the Production Log Text Area:
-        //productionLogTxt.setText(String.valueOf(productLine));
 
     }
 
