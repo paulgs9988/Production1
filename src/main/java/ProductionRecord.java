@@ -20,7 +20,7 @@ public class ProductionRecord {
     // of its type "product" that have been created
     public ProductionRecord(Product product, int itemCount){
         this.product = product;
-        this.productionNumber = itemCount;
+        this.itemCount = itemCount;
         this.productID = product.getID();
         String serialGeneration = "";
 

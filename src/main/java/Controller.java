@@ -6,11 +6,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.Collections;
 import java.util.Date;
 import java.sql.Timestamp;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 /* *************************************************************************************************
 Controller Class:
@@ -25,6 +28,11 @@ public class Controller<choiceItemType> implements Item{
     private ObservableList<Product> productArray = FXCollections.observableArrayList();
     //private ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
     //private ArrayList<ProductionRecord> productionLog = new ArrayList<ProductionRecord>();
+    public int auMax;
+    public int viMax;
+    public int amMax;
+    public int vmMax;
+
 
     @Override
     public int getID() {
@@ -135,12 +143,28 @@ public class Controller<choiceItemType> implements Item{
         int quantitySelection = Integer.valueOf(cmbQuantity.getValue());
 
 
-        //loadProductionLog();
-        //showProduction();
-
-        ProductionRecord productionRecord = new ProductionRecord(productArray.get(listViewSelection),quantitySelection);
+        if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIO) {
+            for (int i = auMax+1; i < quantitySelection+auMax+1; i++) {
+                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+            }
+        }
+        if(productArray.get(listViewSelection).getItemType()==ItemType.VISUAL) {
+            for (int i = viMax+1; i < quantitySelection+viMax+1; i++) {
+                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+            }
+        }
+        if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIOMOBILE) {
+            for (int i = amMax+1; i < quantitySelection+amMax+1; i++) {
+                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+            }
+        }
+        if(productArray.get(listViewSelection).getItemType()==ItemType.VISUALMOBILE) {
+            for (int i = vmMax+1; i < quantitySelection+vmMax+1; i++) {
+                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+            }
+        }
         //loadProductionLog(productionRecord);
-        productionRun.add(productionRecord);
+        //productionRun.add(productionRecord);
         //productionLogTxt.appendText(productionRecord.toString()+"\n");
         addToProductionDB(productionRun);
         loadProductionLog();
@@ -148,7 +172,6 @@ public class Controller<choiceItemType> implements Item{
 
 
     }
-
     /* *************************************************************************************************
     Methods Not Related to FXML:
     Summary: The following area holds code for the various logical/"backend" methods that do things
@@ -201,68 +224,149 @@ public class Controller<choiceItemType> implements Item{
         }
         showProduction(productionLog);
 
+        serialConfigure(productionLog);
     }
-    public void addToProductionDB(ArrayList<ProductionRecord> productionRun){
 
-            //Make sure to use correct database name from res folder (i.e. 'productiondb')
-            final String JDBC_DRIVER = "org.h2.Driver";
-            final String DB_URL = "jdbc:h2:./res/productiondb";
+    public void serialConfigure(ArrayList<ProductionRecord> productionLog){
+        ArrayList<String> auSerials = new ArrayList<String>();
+        ArrayList<String> viSerials = new ArrayList<String>();
+        ArrayList<String> amSerials = new ArrayList<String>();
+        ArrayList<String> vmSerials = new ArrayList<String>();
 
-            //  Database credentials
-            final String USER = "";
-            final String PASS = "";
-            Connection conn = null;
-            Statement stmt = null;
-
-            try {
-                // STEP 1: Register JDBC driver
-                Class.forName(JDBC_DRIVER);
-
-                //STEP 2: Open a connection
-                conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-                //STEP 3: Execute a query
-                stmt = conn.createStatement();
-
-                for(ProductionRecord pr : productionRun) {
-
-                    int productionNumber = pr.getProductionNumber();
-                    int productionID = pr.getProductID();
-                    String serialNumber = pr.getSerialNumber();
-                    //Date dateProduced = (Timestamp) pr.getDateProduced();
-                    Date date = new Date();
-                    Timestamp ts = new Timestamp(date.getTime());
-
-                    String insertSql = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES('"+productionNumber+"','"+productionID+"','"+serialNumber+"','"+ts+"')";
-
-                    //Use the following commented out code if a Prepared Statement is preferable for accomplishing this insertion
-
-                    //String insertSqlps = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES(?,?,?,?)";
-
-
-                    //PreparedStatement ps = conn.prepareStatement(insertSqlps);
-
-                    //ps.setString(1, String.valueOf(productionNumber));
-                    //ps.setString(2, String.valueOf(productionID));
-                    //ps.setString(3, serialNumber);
-                    //ps.setString(4, dateProduced.toString());
-
-                    //String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+iPad.getName()+"','"+iPad.getType()+"','"+iPad.getManufacturer()+"')";
-
-                    stmt.executeUpdate(insertSql);
-                    //stmt.executeUpdate(sql);
-                    //ps.executeUpdate();
-                }
-
-                // STEP 4: Clean-up environment
-                stmt.close();
-                conn.close();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+        for(ProductionRecord pr : productionLog) {
+            if (pr.getSerialNumber().contains("AU")) {
+                auSerials.add(pr.getSerialNumber());
+            } else if (pr.getSerialNumber().contains("VI")) {
+                viSerials.add(pr.getSerialNumber());
+            } else if (pr.getSerialNumber().contains("AM")) {
+                amSerials.add(pr.getSerialNumber());
+            } else if (pr.getSerialNumber().contains("VM")) {
+                vmSerials.add(pr.getSerialNumber());
             }
+        }
+
+        ArrayList<String> auSerialsNum = new ArrayList<String>();
+        ArrayList<String> viSerialsNum = new ArrayList<String>();
+        ArrayList<String> amSerialsNum = new ArrayList<String>();
+        ArrayList<String> vmSerialsNum = new ArrayList<String>();
+
+        for(String st : auSerials){
+            auSerialsNum.add(st.replaceAll("\\D+",""));
+        }
+
+        for(String st : viSerials){
+            viSerialsNum.add(st.replaceAll("\\D+",""));
+        }
+
+        for(String st : amSerials){
+            amSerialsNum.add(st.replaceAll("\\D+",""));
+        }
+
+        for(String st : vmSerials){
+            vmSerialsNum.add(st.replaceAll("\\D+",""));
+        }
+
+        try {
+            ArrayList<Integer> auNumbers = new ArrayList<Integer>();
+
+            for (int i = 0; i < auSerialsNum.size(); i++) {
+                auNumbers.add(Integer.valueOf(auSerialsNum.get(i)));
+            }
+
+            ArrayList<Integer> viNumbers = new ArrayList<Integer>();
+
+            for (int i = 0; i < viSerialsNum.size(); i++) {
+                viNumbers.add(Integer.valueOf(viSerialsNum.get(i)));
+            }
+
+            ArrayList<Integer> amNumbers = new ArrayList<Integer>();
+
+            for (int i = 0; i < amSerialsNum.size(); i++) {
+                amNumbers.add(Integer.valueOf(amSerialsNum.get(i)));
+            }
+
+            ArrayList<Integer> vmNumbers = new ArrayList<Integer>();
+
+            for (int i = 0; i < vmSerialsNum.size(); i++) {
+                vmNumbers.add(Integer.valueOf(vmSerialsNum.get(i)));
+            }
+            auMax = Collections.max(auNumbers);
+            viMax = Collections.max(viNumbers);
+            amMax = Collections.max(amNumbers);
+            vmMax = Collections.max(vmNumbers);
+
+            System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
+
+        }catch(NoSuchElementException e){
+            int amMax = 0;
+            int vmMax = 0;
+
+        }
+
+        //System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
+    }
+
+    public void addToProductionDB(ArrayList<ProductionRecord> productionRun) {
+
+        //Make sure to use correct database name from res folder (i.e. 'productiondb')
+        final String JDBC_DRIVER = "org.h2.Driver";
+        final String DB_URL = "jdbc:h2:./res/productiondb";
+
+        //  Database credentials
+        final String USER = "";
+        final String PASS = "";
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            // STEP 1: Register JDBC driver
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 2: Open a connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            //STEP 3: Execute a query
+            stmt = conn.createStatement();
+
+            for (ProductionRecord pr : productionRun) {
+
+                int productionNumber = pr.getProductionNumber();
+                int productionID = pr.getProductID();
+                String serialNumber = pr.getSerialNumber();
+                //Date dateProduced = (Timestamp) pr.getDateProduced();
+                Date date = new Date();
+                Timestamp ts = new Timestamp(date.getTime());
+
+                String insertSql = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES('" + productionNumber + "','" + productionID + "','" + serialNumber + "','" + ts + "')";
+
+                //Use the following commented out code if a Prepared Statement is preferable for accomplishing this insertion
+
+                //String insertSqlps = "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID, SERIAL_NUM,DATE_PRODUCED) VALUES(?,?,?,?)";
+
+
+                //PreparedStatement ps = conn.prepareStatement(insertSqlps);
+
+                //ps.setString(1, String.valueOf(productionNumber));
+                //ps.setString(2, String.valueOf(productionID));
+                //ps.setString(3, serialNumber);
+                //ps.setString(4, dateProduced.toString());
+
+                //String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+iPad.getName()+"','"+iPad.getType()+"','"+iPad.getManufacturer()+"')";
+
+                stmt.executeUpdate(insertSql);
+                //stmt.executeUpdate(sql);
+                //ps.executeUpdate();
+            }
+
+            // STEP 4: Clean-up environment
+            stmt.close();
+            conn.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
     public void showProduction(ArrayList<ProductionRecord> productionLog){
