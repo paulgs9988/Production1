@@ -18,7 +18,7 @@ public class Main extends Application {
         //Scene scene = new Scene(root, 300, 275);
 
         //Updated scene dimensions:
-        Scene scene = new Scene(root, 309, 515);
+        Scene scene = new Scene(root, 382, 515);
 
 
         primaryStage.setTitle("Production Program");

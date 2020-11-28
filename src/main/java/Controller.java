@@ -17,7 +17,8 @@ import java.util.NoSuchElementException;
 
 /* *************************************************************************************************
 Controller Class:
-Summary: This class is responsible for enacting the code that handles the actions and initialization of the Production program
+Summary: This class is responsible for enacting the code that handles the actions and initialization
+         of the Production program
  ************************************************************************************************* */
 
 public class Controller<choiceItemType> implements Item{
@@ -28,10 +29,13 @@ public class Controller<choiceItemType> implements Item{
     private ObservableList<Product> productArray = FXCollections.observableArrayList();
     //private ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
     //private ArrayList<ProductionRecord> productionLog = new ArrayList<ProductionRecord>();
+
+    //The following four variables are used in determining the correct serial number:
     public int auMax;
     public int viMax;
     public int amMax;
     public int vmMax;
+    public int maxProductionNumber;
 
 
     @Override
@@ -66,6 +70,44 @@ public class Controller<choiceItemType> implements Item{
              like buttons, text areas, combo boxes, etc)
     ************************************************************************************************* */
 
+    /* *************************************************************************************************
+    Production Log Tab FXML Items below:
+    Summary: The following area holds code for the various FXML items found on the "Production Log" tab
+    ************************************************************************************************* */
+
+    @FXML
+    private TextArea productionLogTxt;
+
+    /* *************************************************************************************************
+    Product Line Tab FXML Items below:
+    Summary: The following area holds code for the various FXML items found on the "Product Line" tab
+    ************************************************************************************************* */
+
+    @FXML
+    private TextField txtProductName;
+
+    @FXML
+    private TextField txtManufacturer;
+
+    @FXML
+    private ChoiceBox<Enum> choiceItemType;
+
+    @FXML
+    private TableView<Product> existingProductTableView;
+
+    @FXML
+    private TableColumn<?, ?> productNameColumn;
+
+    @FXML
+    private TableColumn<?, ?> productManufacturerColumn;
+
+    @FXML
+    private TableColumn<?, ?> productTypeColumn;
+
+    //The following tag was used for the deleted "Product ID" column on Product Line's TableView:
+    //@FXML
+    //private TableColumn<?,?> productIdColumn;
+
     @FXML
     private void addProductButtonPush(ActionEvent event) {
         // ADD PRODUCT Button was clicked, do something...
@@ -89,43 +131,16 @@ public class Controller<choiceItemType> implements Item{
         produceListView.setItems(productArray);
     }
 
-    //Produce Tab's "Choose Quantity" drop menu
-    @FXML
-    private ComboBox<String> cmbQuantity;
-
-    //Product Line Tab's "Product Name" text box
-    @FXML
-    private TextField txtProductName;
-
-    //Product Line Tab's "manufacturer" text box
-    @FXML
-    private TextField txtManufacturer;
-
-    //this refers to the Product Line Tab's "Item Type" drop menu
-    @FXML
-    private ChoiceBox<Enum> choiceItemType;
-
-    //this refers to the Production Log Tab's Text Area
-    @FXML
-    private TextArea productionLogTxt;
-
-    @FXML
-    private TableView<Product> existingProductTableView;
-    //The following tagged was used for the deleted "Product ID" column on Product Line's TableView
-    //@FXML
-    //private TableColumn<?,?> productIdColumn;
-
-    @FXML
-    private TableColumn<?, ?> productNameColumn;
-
-    @FXML
-    private TableColumn<?, ?> productManufacturerColumn;
-
-    @FXML
-    private TableColumn<?, ?> productTypeColumn;
+    /* *************************************************************************************************
+    Produce Tab FXML Items below:
+    Summary: The following area holds code for the various FXML items found on the "Produce" tab
+    ************************************************************************************************* */
 
     @FXML
     private ListView<Product> produceListView;
+
+    @FXML
+    private ComboBox<String> cmbQuantity;
 
     @FXML
     private void recordProductionButton(ActionEvent event){
@@ -142,40 +157,78 @@ public class Controller<choiceItemType> implements Item{
         //drop menu chosen value or entered value:
         int quantitySelection = Integer.valueOf(cmbQuantity.getValue());
 
-
+        //The following lines separate the selected item based on itemType so that the proper serial number can be
+        //generated based on the correlating itemType. auMax,viMax, etc correspond to the current Max value of the
+        //serial number corresponding to a particular itemType in the PRODUCTIONRECORD database
         if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIO) {
             for (int i = auMax+1; i < quantitySelection+auMax+1; i++) {
-                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
+                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
+                maxProductionNumber++;
+                productionRun.add(tempProductionRecord);
             }
         }
         if(productArray.get(listViewSelection).getItemType()==ItemType.VISUAL) {
             for (int i = viMax+1; i < quantitySelection+viMax+1; i++) {
-                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
+                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
+                maxProductionNumber++;
+                productionRun.add(tempProductionRecord);
             }
         }
         if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIOMOBILE) {
             for (int i = amMax+1; i < quantitySelection+amMax+1; i++) {
-                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
+                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
+                maxProductionNumber++;
+                productionRun.add(tempProductionRecord);
             }
         }
         if(productArray.get(listViewSelection).getItemType()==ItemType.VISUALMOBILE) {
             for (int i = vmMax+1; i < quantitySelection+vmMax+1; i++) {
-                productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
+                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
+                maxProductionNumber++;
+                productionRun.add(tempProductionRecord);
             }
         }
-        //loadProductionLog(productionRecord);
-        //productionRun.add(productionRecord);
-        //productionLogTxt.appendText(productionRecord.toString()+"\n");
+
         addToProductionDB(productionRun);
         loadProductionLog();
-        //showProduction(productionLog);
-
 
     }
     /* *************************************************************************************************
+    Employee Tab FXML Items below:
+    Summary: The following area holds code for the various FXML items found on the "Employee" tab
+    ************************************************************************************************* */
+    @FXML
+    private TextField employeeNameText;
+
+    @FXML
+    private TextField employeePasswordText;
+
+    @FXML
+    private TextArea employeeTextArea;
+
+    @FXML
+    void submitEmployeeButton(ActionEvent event) {
+        String employeeNameString = employeeNameText.getText();
+        String employeePassword = employeePasswordText.getText();
+
+        Employee newEmployee = new Employee(employeeNameString,employeePassword);
+
+        employeeTextArea.clear();
+        employeeTextArea.appendText(newEmployee.toString());
+    }
+
+    /* *************************************************************************************************
     Methods Not Related to FXML:
     Summary: The following area holds code for the various logical/"backend" methods that do things
-             like populate arrays, make database queries, code for displays, etc
+             like populate arrays, make database queries, code for display of text in the GUI, etc
     ************************************************************************************************* */
 
     public void loadProductionLog(){
@@ -228,6 +281,15 @@ public class Controller<choiceItemType> implements Item{
     }
 
     public void serialConfigure(ArrayList<ProductionRecord> productionLog){
+        //This method is used to garner the production runs that exist in the Database. It then performs
+        //operations until the highest value serial number of each itemType is gotten so that the system
+        //can maintain proper serial number generation. Most of the variables here are local and are only
+        //used here and may not have the most intuitive/meaningful names.
+
+        //Updated Functionality: This method is also used to get the max "Production Number" value from
+        //the production log so that the subsequent created ProductionRecord will continue sequentially.
+
+
         ArrayList<String> auSerials = new ArrayList<String>();
         ArrayList<String> viSerials = new ArrayList<String>();
         ArrayList<String> amSerials = new ArrayList<String>();
@@ -295,15 +357,20 @@ public class Controller<choiceItemType> implements Item{
             amMax = Collections.max(amNumbers);
             vmMax = Collections.max(vmNumbers);
 
-            System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
+            //System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
 
         }catch(NoSuchElementException e){
             int amMax = 0;
             int vmMax = 0;
 
         }
+        ArrayList<Integer> productionNumbers = new ArrayList<Integer>();
 
-        //System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
+        for(ProductionRecord pr : productionLog) {
+            productionNumbers.add(pr.getProductionNumber());
+        }
+        maxProductionNumber = Collections.max(productionNumbers);
+
     }
 
     public void addToProductionDB(ArrayList<ProductionRecord> productionRun) {
