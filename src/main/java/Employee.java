@@ -54,7 +54,7 @@ public class Employee {
 
     }
 
-    private boolean isValidPassword(){
+    public boolean isValidPassword(){
         boolean hasSpecial   = !password.matches("[A-Za-z0-9 ]*");
         boolean hasCapital = password.matches(".*[A-Z].*");
         boolean hasLower = password.matches(".*[a-z].*");

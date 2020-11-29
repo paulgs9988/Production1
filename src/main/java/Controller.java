@@ -6,7 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.scene.control.Alert;
 import java.util.Collections;
 import java.util.Date;
 import java.sql.Timestamp;
@@ -14,6 +14,8 @@ import java.sql.Timestamp;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+
+
 
 /* *************************************************************************************************
 Controller Class:
@@ -117,18 +119,53 @@ public class Controller<choiceItemType> implements Item{
            the database
          */
 
-        String productName = txtProductName.getText();
-        ItemType itemType = (ItemType) choiceItemType.getValue();
-        String manufacturer = txtManufacturer.getText();
+        if(txtProductName.getText() == null || txtProductName.getText().trim().isEmpty()){
+            System.out.println("ERROR: You must enter a value for Product Name.");
 
-        Product product = new Widget(productName,manufacturer,itemType);
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO PRODUCT NAME ENTERED");
+            alert.setContentText("Please enter the Product's name.");
+            alert.showAndWait();
+        }
+        else if(txtManufacturer.getText() == null || txtManufacturer.getText().trim().isEmpty()){
+            System.out.println("ERROR: You must enter a value for Manufacturer Name.");
 
-        connectToDb();
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO MANUFACTURER NAME ENTERED");
+            alert.setContentText("Please enter the Product Manufacturer's name.");
+            alert.showAndWait();
+        }
+        else if(choiceItemType.getValue() == null){
+            System.out.println("ERROR: Please select an Item Type.");
 
-        //Adding "Product" to ObservableList and populate ListView with productArray:
-        productLine.add(product);
-        productArray.add(product);
-        produceListView.setItems(productArray);
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO ITEM TYPE SELECTED");
+            alert.setContentText("Please select an Item Type from the drop menu.");
+            alert.showAndWait();
+        }
+        else {
+            String productName = txtProductName.getText();
+            ItemType itemType = (ItemType) choiceItemType.getValue();
+            String manufacturer = txtManufacturer.getText();
+
+            Product product = new Widget(productName, manufacturer, itemType);
+
+            connectToDb();
+
+            //Adding "Product" to ObservableList and populate ListView with productArray:
+            productLine.add(product);
+            productArray.add(product);
+            produceListView.setItems(productArray);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("SUCCESS");
+            alert.setHeaderText("PRODUCT SUCCESSFULLY ADDED");
+            alert.setContentText("You've successfully added the following product to the database:\n\nName: "+productName+"\nType: "+itemType+"\nManufacturer: "+manufacturer);
+            alert.showAndWait();
+        }
     }
 
     /* *************************************************************************************************
@@ -144,61 +181,102 @@ public class Controller<choiceItemType> implements Item{
 
     @FXML
     private void recordProductionButton(ActionEvent event){
+        if(produceListView.getSelectionModel().getSelectedItem() == null && !cmbQuantity.getValue().matches("\\d+")){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO PRODUCT SELECTED + INVALID QUANTITY");
+            alert.setContentText("You must select a Product from the List View and enter \na number for Production Quantity.");
+            alert.showAndWait();
+        }
+        else if(produceListView.getSelectionModel().getSelectedItem() == null){
+            System.out.println("ERROR: Please make a selection from the List View.");
 
-        ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO PRODUCT SELECTED");
+            alert.setContentText("You must select a Product from the List View.");
+            alert.showAndWait();
+        }
+        else if(cmbQuantity.getValue() == null){
+            System.out.println("ERROR: Please select or enter a quantity for this Production.");
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO QUANTITY ENTERED");
+            alert.setContentText("You must enter a number for the production quantity.");
+            alert.showAndWait();
+        }
+        else if(!cmbQuantity.getValue().matches("\\d+")){
+            //Use REGEX to make sure user enters a number in Combo Quantity
+            System.out.println("ERROR: You must enter a number.");
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("INVALID QUANTITY ENTERED");
+            alert.setContentText("You must enter a number for the production quantity.");
+            alert.showAndWait();
+        }
+        else {
+            ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
         /*the following line of code garners the selected item from the Produce Tab's ListView and generates a production record
         of quantity relating to the number chosen from the dropdown menu and then a new Production Record is created when the "record
         production" button is clicked
         */
 
-        //The Product's index at the user's selection in the GUI's ListView:
-        int listViewSelection = produceListView.getSelectionModel().getSelectedIndex();
+            //The Product's index at the user's selection in the GUI's ListView:
+            int listViewSelection = produceListView.getSelectionModel().getSelectedIndex();
 
-        //drop menu chosen value or entered value:
-        int quantitySelection = Integer.valueOf(cmbQuantity.getValue());
+            //drop menu chosen value or entered value:
+            int quantitySelection = Integer.valueOf(cmbQuantity.getValue());
 
-        //The following lines separate the selected item based on itemType so that the proper serial number can be
-        //generated based on the correlating itemType. auMax,viMax, etc correspond to the current Max value of the
-        //serial number corresponding to a particular itemType in the PRODUCTIONRECORD database
-        if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIO) {
-            for (int i = auMax+1; i < quantitySelection+auMax+1; i++) {
-                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
-                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
-                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
-                maxProductionNumber++;
-                productionRun.add(tempProductionRecord);
+            //The following lines separate the selected item based on itemType so that the proper serial number can be
+            //generated based on the correlating itemType. auMax,viMax, etc correspond to the current Max value of the
+            //serial number corresponding to a particular itemType in the PRODUCTIONRECORD database
+            if (productArray.get(listViewSelection).getItemType() == ItemType.AUDIO) {
+                for (int i = auMax + 1; i < quantitySelection + auMax + 1; i++) {
+                    //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                    ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection), i);
+                    tempProductionRecord.setProductionNumber(maxProductionNumber + 1);
+                    maxProductionNumber++;
+                    productionRun.add(tempProductionRecord);
+                }
             }
-        }
-        if(productArray.get(listViewSelection).getItemType()==ItemType.VISUAL) {
-            for (int i = viMax+1; i < quantitySelection+viMax+1; i++) {
-                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
-                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
-                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
-                maxProductionNumber++;
-                productionRun.add(tempProductionRecord);
+            if (productArray.get(listViewSelection).getItemType() == ItemType.VISUAL) {
+                for (int i = viMax + 1; i < quantitySelection + viMax + 1; i++) {
+                    //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                    ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection), i);
+                    tempProductionRecord.setProductionNumber(maxProductionNumber + 1);
+                    maxProductionNumber++;
+                    productionRun.add(tempProductionRecord);
+                }
             }
-        }
-        if(productArray.get(listViewSelection).getItemType()==ItemType.AUDIOMOBILE) {
-            for (int i = amMax+1; i < quantitySelection+amMax+1; i++) {
-                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
-                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
-                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
-                maxProductionNumber++;
-                productionRun.add(tempProductionRecord);
+            if (productArray.get(listViewSelection).getItemType() == ItemType.AUDIOMOBILE) {
+                for (int i = amMax + 1; i < quantitySelection + amMax + 1; i++) {
+                    //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                    ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection), i);
+                    tempProductionRecord.setProductionNumber(maxProductionNumber + 1);
+                    maxProductionNumber++;
+                    productionRun.add(tempProductionRecord);
+                }
             }
-        }
-        if(productArray.get(listViewSelection).getItemType()==ItemType.VISUALMOBILE) {
-            for (int i = vmMax+1; i < quantitySelection+vmMax+1; i++) {
-                //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
-                ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection),i);
-                tempProductionRecord.setProductionNumber(maxProductionNumber+1);
-                maxProductionNumber++;
-                productionRun.add(tempProductionRecord);
+            if (productArray.get(listViewSelection).getItemType() == ItemType.VISUALMOBILE) {
+                for (int i = vmMax + 1; i < quantitySelection + vmMax + 1; i++) {
+                    //productionRun.add(new ProductionRecord(productArray.get(listViewSelection), i));
+                    ProductionRecord tempProductionRecord = new ProductionRecord(productArray.get(listViewSelection), i);
+                    tempProductionRecord.setProductionNumber(maxProductionNumber + 1);
+                    maxProductionNumber++;
+                    productionRun.add(tempProductionRecord);
+                }
             }
-        }
 
-        addToProductionDB(productionRun);
-        loadProductionLog();
+            addToProductionDB(productionRun);
+            loadProductionLog();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("SUCCESS");
+            alert.setHeaderText("PRODUCTION SUCCESSFULLY RECORDED");
+            alert.setContentText("You successfully added the following production:\n\nQuantity: "+quantitySelection+"\nProduct Name: "+productArray.get(listViewSelection).getName()+"\nProduct Manufacturer: "+productArray.get(listViewSelection).getManufacturer()+"\n\nSee 'Production Log' Tab for more information.");
+            alert.showAndWait();
+        }
 
     }
     /* *************************************************************************************************
@@ -218,11 +296,53 @@ public class Controller<choiceItemType> implements Item{
     void submitEmployeeButton(ActionEvent event) {
         String employeeNameString = employeeNameText.getText();
         String employeePassword = employeePasswordText.getText();
+        Employee newEmployee = new Employee(employeeNameString, employeePassword);
 
-        Employee newEmployee = new Employee(employeeNameString,employeePassword);
+        if(employeeNameText.getText().equals(("")) && employeePasswordText.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO NAME OR PASSWORD ENTERED");
+            alert.setContentText("You must enter your First Name and Last Name (For Example: John Doe), and a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
+            alert.showAndWait();
+        }
+        else if(employeeNameText.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO NAME ENTERED");
+            alert.setContentText("You must enter your First Name and Last Name (For Example: John Doe) ");
+            alert.showAndWait();
+        }
+        else if(!(employeeNameString.indexOf(" ") >= 0)){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid Name Entry");
+            alert.setContentText("You must enter your First Name and Last Name separated by a space (For Example: John Doe) ");
+            alert.showAndWait();
+        }
+        else if(employeePasswordText.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO PASSWORD ENTERED");
+            alert.setContentText("You must enter a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
+            alert.showAndWait();
+        }
+        else if(!newEmployee.isValidPassword()){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("INVALID PASSWORD ENTERED");
+            alert.setContentText("You must enter a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
+            alert.showAndWait();
+        }
+        else {
+            employeeTextArea.clear();
+            employeeTextArea.appendText(newEmployee.toString());
 
-        employeeTextArea.clear();
-        employeeTextArea.appendText(newEmployee.toString());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("SUCCESS");
+            alert.setHeaderText("EMPLOYEE INFO SUCCESSFULLY ENTERED");
+            alert.setContentText("You've successfully created a new Username and Email Address.\nSee text box below for details.");
+            alert.showAndWait();
+        }
     }
 
     /* *************************************************************************************************
