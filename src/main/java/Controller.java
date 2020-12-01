@@ -2,28 +2,42 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.Alert;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.sql.Timestamp;
-
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 
 
-/* *************************************************************************************************
+
+
+/* **********************************************************************************************
 Controller Class:
 Summary: This class is responsible for enacting the code that handles the actions and initialization
          of the Production program
- ************************************************************************************************* */
-
-public class Controller<choiceItemType> implements Item{
+ ********************************************************************************************** */
+public class Controller<choiceItemType> implements Item {
 
     //ObservableLists and ArrayLists used throughout program:
 
@@ -119,7 +133,7 @@ public class Controller<choiceItemType> implements Item{
            the database
          */
 
-        if(txtProductName.getText() == null || txtProductName.getText().trim().isEmpty()){
+        if (txtProductName.getText() == null || txtProductName.getText().trim().isEmpty()) {
             System.out.println("ERROR: You must enter a value for Product Name.");
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -127,8 +141,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("NO PRODUCT NAME ENTERED");
             alert.setContentText("Please enter the Product's name.");
             alert.showAndWait();
-        }
-        else if(txtManufacturer.getText() == null || txtManufacturer.getText().trim().isEmpty()){
+        } else if (txtManufacturer.getText() == null || txtManufacturer.getText().trim().isEmpty()) {
             System.out.println("ERROR: You must enter a value for Manufacturer Name.");
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -136,8 +149,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("NO MANUFACTURER NAME ENTERED");
             alert.setContentText("Please enter the Product Manufacturer's name.");
             alert.showAndWait();
-        }
-        else if(choiceItemType.getValue() == null){
+        } else if (choiceItemType.getValue() == null) {
             System.out.println("ERROR: Please select an Item Type.");
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -145,8 +157,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("NO ITEM TYPE SELECTED");
             alert.setContentText("Please select an Item Type from the drop menu.");
             alert.showAndWait();
-        }
-        else {
+        } else {
             String productName = txtProductName.getText();
             ItemType itemType = (ItemType) choiceItemType.getValue();
             String manufacturer = txtManufacturer.getText();
@@ -163,7 +174,7 @@ public class Controller<choiceItemType> implements Item{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("SUCCESS");
             alert.setHeaderText("PRODUCT SUCCESSFULLY ADDED");
-            alert.setContentText("You've successfully added the following product to the database:\n\nName: "+productName+"\nType: "+itemType+"\nManufacturer: "+manufacturer);
+            alert.setContentText("You've successfully added the following product to the database:\n\nName: " + productName + "\nType: " + itemType + "\nManufacturer: " + manufacturer);
             alert.showAndWait();
         }
     }
@@ -180,15 +191,14 @@ public class Controller<choiceItemType> implements Item{
     private ComboBox<String> cmbQuantity;
 
     @FXML
-    private void recordProductionButton(ActionEvent event){
-        if(produceListView.getSelectionModel().getSelectedItem() == null && !cmbQuantity.getValue().matches("\\d+")){
+    private void recordProductionButton(ActionEvent event) {
+        if (produceListView.getSelectionModel().getSelectedItem() == null && !cmbQuantity.getValue().matches("\\d+")) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("NO PRODUCT SELECTED + INVALID QUANTITY");
             alert.setContentText("You must select a Product from the List View and enter \na number for Production Quantity.");
             alert.showAndWait();
-        }
-        else if(produceListView.getSelectionModel().getSelectedItem() == null){
+        } else if (produceListView.getSelectionModel().getSelectedItem() == null) {
             System.out.println("ERROR: Please make a selection from the List View.");
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -196,8 +206,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("NO PRODUCT SELECTED");
             alert.setContentText("You must select a Product from the List View.");
             alert.showAndWait();
-        }
-        else if(cmbQuantity.getValue() == null){
+        } else if (cmbQuantity.getValue() == null) {
             System.out.println("ERROR: Please select or enter a quantity for this Production.");
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -205,8 +214,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("NO QUANTITY ENTERED");
             alert.setContentText("You must enter a number for the production quantity.");
             alert.showAndWait();
-        }
-        else if(!cmbQuantity.getValue().matches("\\d+")){
+        } else if (!cmbQuantity.getValue().matches("\\d+")) {
             //Use REGEX to make sure user enters a number in Combo Quantity
             System.out.println("ERROR: You must enter a number.");
 
@@ -215,8 +223,7 @@ public class Controller<choiceItemType> implements Item{
             alert.setHeaderText("INVALID QUANTITY ENTERED");
             alert.setContentText("You must enter a number for the production quantity.");
             alert.showAndWait();
-        }
-        else {
+        } else {
             ArrayList<ProductionRecord> productionRun = new ArrayList<ProductionRecord>();
         /*the following line of code garners the selected item from the Produce Tab's ListView and generates a production record
         of quantity relating to the number chosen from the dropdown menu and then a new Production Record is created when the "record
@@ -274,11 +281,12 @@ public class Controller<choiceItemType> implements Item{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("SUCCESS");
             alert.setHeaderText("PRODUCTION SUCCESSFULLY RECORDED");
-            alert.setContentText("You successfully added the following production:\n\nQuantity: "+quantitySelection+"\nProduct Name: "+productArray.get(listViewSelection).getName()+"\nProduct Manufacturer: "+productArray.get(listViewSelection).getManufacturer()+"\n\nSee 'Production Log' Tab for more information.");
+            alert.setContentText("You successfully added the following production:\n\nQuantity: " + quantitySelection + "\nProduct Name: " + productArray.get(listViewSelection).getName() + "\nProduct Manufacturer: " + productArray.get(listViewSelection).getManufacturer() + "\n\nSee 'Production Log' Tab for more information.");
             alert.showAndWait();
         }
 
     }
+
     /* *************************************************************************************************
     Employee Tab FXML Items below:
     Summary: The following area holds code for the various FXML items found on the "Employee" tab
@@ -298,42 +306,37 @@ public class Controller<choiceItemType> implements Item{
         String employeePassword = employeePasswordText.getText();
         Employee newEmployee = new Employee(employeeNameString, employeePassword);
 
-        if(employeeNameText.getText().equals(("")) && employeePasswordText.getText().equals("")){
+        if (employeeNameText.getText().equals(("")) && employeePasswordText.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("NO NAME OR PASSWORD ENTERED");
             alert.setContentText("You must enter your First Name and Last Name (For Example: John Doe), and a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
             alert.showAndWait();
-        }
-        else if(employeeNameText.getText().equals("")){
+        } else if (employeeNameText.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("NO NAME ENTERED");
             alert.setContentText("You must enter your First Name and Last Name (For Example: John Doe) ");
             alert.showAndWait();
-        }
-        else if(!(employeeNameString.indexOf(" ") >= 0)){
+        } else if (!(employeeNameString.indexOf(" ") >= 0)) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("Invalid Name Entry");
             alert.setContentText("You must enter your First Name and Last Name separated by a space (For Example: John Doe) ");
             alert.showAndWait();
-        }
-        else if(employeePasswordText.getText().equals("")){
+        } else if (employeePasswordText.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("NO PASSWORD ENTERED");
             alert.setContentText("You must enter a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
             alert.showAndWait();
-        }
-        else if(!newEmployee.isValidPassword()){
+        } else if (!newEmployee.isValidPassword()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("INVALID PASSWORD ENTERED");
             alert.setContentText("You must enter a desired password that contains the following:\n\n-At least one capital letter\n-At least one lowercase letter\n-At least one number\n-At least one special character (i.e. !@#$%^)");
             alert.showAndWait();
-        }
-        else {
+        } else {
             employeeTextArea.clear();
             employeeTextArea.appendText(newEmployee.toString());
 
@@ -351,7 +354,7 @@ public class Controller<choiceItemType> implements Item{
              like populate arrays, make database queries, code for display of text in the GUI, etc
     ************************************************************************************************* */
 
-    public void loadProductionLog(){
+    public void loadProductionLog() {
         /* This method creates and populates the productionLog ArrayList by going to the
         ProductRecord database and adding each ProductionRecord item to the ArrayList
          */
@@ -382,7 +385,7 @@ public class Controller<choiceItemType> implements Item{
             ResultSet rs = stmt.executeQuery("select * from productionrecord");
 
             while (rs.next()) {
-                productionLog.add(new ProductionRecord(rs.getInt(1),rs.getInt(2),rs.getString(3),rs.getDate(4)));
+                productionLog.add(new ProductionRecord(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDate(4)));
             }
 
 
@@ -400,7 +403,7 @@ public class Controller<choiceItemType> implements Item{
         serialConfigure(productionLog);
     }
 
-    public void serialConfigure(ArrayList<ProductionRecord> productionLog){
+    public void serialConfigure(ArrayList<ProductionRecord> productionLog) {
         //This method is used to garner the production runs that exist in the Database. It then performs
         //operations until the highest value serial number of each itemType is gotten so that the system
         //can maintain proper serial number generation. Most of the variables here are local and are only
@@ -415,7 +418,7 @@ public class Controller<choiceItemType> implements Item{
         ArrayList<String> amSerials = new ArrayList<String>();
         ArrayList<String> vmSerials = new ArrayList<String>();
 
-        for(ProductionRecord pr : productionLog) {
+        for (ProductionRecord pr : productionLog) {
             if (pr.getSerialNumber().contains("AU")) {
                 auSerials.add(pr.getSerialNumber());
             } else if (pr.getSerialNumber().contains("VI")) {
@@ -432,20 +435,20 @@ public class Controller<choiceItemType> implements Item{
         ArrayList<String> amSerialsNum = new ArrayList<String>();
         ArrayList<String> vmSerialsNum = new ArrayList<String>();
 
-        for(String st : auSerials){
-            auSerialsNum.add(st.replaceAll("\\D+",""));
+        for (String st : auSerials) {
+            auSerialsNum.add(st.replaceAll("\\D+", ""));
         }
 
-        for(String st : viSerials){
-            viSerialsNum.add(st.replaceAll("\\D+",""));
+        for (String st : viSerials) {
+            viSerialsNum.add(st.replaceAll("\\D+", ""));
         }
 
-        for(String st : amSerials){
-            amSerialsNum.add(st.replaceAll("\\D+",""));
+        for (String st : amSerials) {
+            amSerialsNum.add(st.replaceAll("\\D+", ""));
         }
 
-        for(String st : vmSerials){
-            vmSerialsNum.add(st.replaceAll("\\D+",""));
+        for (String st : vmSerials) {
+            vmSerialsNum.add(st.replaceAll("\\D+", ""));
         }
 
         try {
@@ -479,14 +482,14 @@ public class Controller<choiceItemType> implements Item{
 
             //System.out.print("The AU max is: "+auMax+"\nThe VI max is: "+viMax+"\nThe AM max is: "+amMax+"\nThe VM max is: "+vmMax);
 
-        }catch(NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             int amMax = 0;
             int vmMax = 0;
 
         }
         ArrayList<Integer> productionNumbers = new ArrayList<Integer>();
 
-        for(ProductionRecord pr : productionLog) {
+        for (ProductionRecord pr : productionLog) {
             productionNumbers.add(pr.getProductionNumber());
         }
         maxProductionNumber = Collections.max(productionNumbers);
@@ -556,10 +559,11 @@ public class Controller<choiceItemType> implements Item{
         }
 
     }
-    public void showProduction(ArrayList<ProductionRecord> productionLog){
+
+    public void showProduction(ArrayList<ProductionRecord> productionLog) {
         productionLogTxt.clear();
         //String nameForPrint = "";
-        for(ProductionRecord pr : productionLog) {
+        for (ProductionRecord pr : productionLog) {
             //The logic in this nested loop is for garnering the Product's name from the
             //productArray ArrayList and printing it to the Production Record text area.
 
@@ -595,7 +599,7 @@ public class Controller<choiceItemType> implements Item{
         }
     }
 
-    public void populateArrays(){
+    public void populateArrays() {
         /* This method populates the productArray ObservableList by going to the Product database and adding each
         product to the ObservableList
          */
@@ -624,7 +628,7 @@ public class Controller<choiceItemType> implements Item{
             ResultSet rs = stmt.executeQuery("select * from product");
 
             while (rs.next()) {
-                productArray.add(new Widget(rs.getInt(1),rs.getString(2),rs.getString(4),ItemType.valueOf(rs.getString(3))));
+                productArray.add(new Widget(rs.getInt(1), rs.getString(2), rs.getString(4), ItemType.valueOf(rs.getString(3))));
             }
 
 
@@ -640,7 +644,7 @@ public class Controller<choiceItemType> implements Item{
     }
 
     //Initialize the Product Line tab's table:
-    public void setUpProductLineTable(){
+    public void setUpProductLineTable() {
 
         //productIdColumn.setCellValueFactory(new PropertyValueFactory("id"));
         productNameColumn.setCellValueFactory(new PropertyValueFactory("name"));
@@ -649,7 +653,7 @@ public class Controller<choiceItemType> implements Item{
         existingProductTableView.setItems(productLine);
     }
 
-    public void loadProductList(){
+    public void loadProductList() {
         populateArrays();
         produceListView.setItems(productArray);
         existingProductTableView.setItems(productArray);
@@ -658,13 +662,13 @@ public class Controller<choiceItemType> implements Item{
 
     //Method used to "initialize" the FX features (i.e. populate drop menus, print tests to
     //text areas, etc)
-    public void initialize(){
+    public void initialize() {
 
         setUpProductLineTable();
         loadProductList();
         loadProductionLog();
 
-        for(ItemType itemMenu: ItemType.values()){
+        for (ItemType itemMenu : ItemType.values()) {
 
             choiceItemType.getItems().addAll(itemMenu);
         }
@@ -673,7 +677,7 @@ public class Controller<choiceItemType> implements Item{
         cmbQuantity.setEditable(true);
 
         //Populate Produce tab combo box with values 1 to 10:
-        for(int count = 1; count<=10;count++){
+        for (int count = 1; count <= 10; count++) {
             cmbQuantity.getItems().add(String.valueOf(count));
         }
         //Default Produce Tab ComboBox to 1:
@@ -687,7 +691,7 @@ public class Controller<choiceItemType> implements Item{
 
     }
 
-    public void connectToDb(){
+    public void connectToDb() {
         //Make sure to use correct database name from res folder (i.e. 'productiondb')
         final String JDBC_DRIVER = "org.h2.Driver";
         final String DB_URL = "jdbc:h2:./res/productiondb";
@@ -703,7 +707,7 @@ public class Controller<choiceItemType> implements Item{
         String manufacturer = txtManufacturer.getText();
 
 
-        Widget iPad = new Widget(productName,manufacturer,itemType);
+        Widget iPad = new Widget(productName, manufacturer, itemType);
 
         ArrayList<Widget> widgets = new ArrayList<Widget>();
         widgets.add(iPad);
@@ -727,7 +731,7 @@ public class Controller<choiceItemType> implements Item{
 
             ps.setString(1, productName);
             ps.setString(2, String.valueOf(itemType));
-            ps.setString(3,manufacturer);
+            ps.setString(3, manufacturer);
 
 
             //String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES('"+iPad.getName()+"','"+iPad.getType()+"','"+iPad.getManufacturer()+"')";
@@ -743,7 +747,7 @@ public class Controller<choiceItemType> implements Item{
 
             //iterate through ResultSet to get all columns' data:
             while (rs.next()) {
-                for(int i = 1; i < columnsNumber; i++)
+                for (int i = 1; i < columnsNumber; i++)
                     System.out.print(rs.getString(i) + " ");
                 System.out.println();
             }
