@@ -1,8 +1,28 @@
-public class MoviePlayer extends Product implements MultimediaControl{
+/**
+
+ * This class is for creating MoviePlayer Objects which are types of Products.
+
+ * A Movie Player extends the Product Class and Implements Multimedia Control Interface
+ * to make use of the associated methods.
+
+ * @author Paul Sullivan
+
+ */
+
+public class MoviePlayer extends Product implements MultimediaControl {
     public Screen screen;
     public MonitorType monitorType;
+    /**
 
-    public MoviePlayer(String name, String manufacturer, Screen screen, MonitorType monitorType){
+     * Constructor for a MoviePlayer Object
+
+     * @param name Product's Name
+     * @param manufacturer Manufacturer's name
+     * @param monitorType type of monitor
+     * @param screen screen object
+
+     */
+    public MoviePlayer(String name, String manufacturer, Screen screen, MonitorType monitorType) {
         this.name = name;
         this.manufacturer = manufacturer;
         this.screen = screen;
@@ -10,10 +30,9 @@ public class MoviePlayer extends Product implements MultimediaControl{
         this.type = ItemType.VISUAL;
     }
 
-
     @Override
-    public String toString(){
-        return "Name: "+this.name+"\nManufacturer: "+this.manufacturer+"\nType: "+this.type+"\n"+this.screen+"\nMonitor Type: "+this.monitorType;
+    public String toString() {
+        return "Name: " + this.name + "\nManufacturer: " + this.manufacturer + "\nType: " + this.type + "\n" + this.screen + "\nMonitor Type: " + this.monitorType;
     }
 
     @Override
