@@ -6,6 +6,9 @@ enhanced and improved going forward. It is a simple project that interacts with 
 and then allows him/her to create "Production Runs" that are documented in another database. There is also an Employee tab that currently has limited
 functionality, but enables a user to create his/her username and email address and enter a desired password.
 
+Visuals:
+Please see the "docs" folder in the Githup Repository for gif files of the program running (i.e. Production_produce_productionlog_tabs.gif).
+
 Installation:
 Currently, to use this program, the user must clone/pull the project from Github and run it using an IDE. The program was written in IntelliJ and 
 uses Gradle and SQL databases.
