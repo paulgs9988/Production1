@@ -6,20 +6,20 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+  public static void main(String[] args) {
+    launch(args);
+  }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+  @Override
+  public void start(Stage primaryStage) throws Exception {
+    Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
 
-        //Updated scene dimensions:
-        Scene scene = new Scene(root, 382, 515);
+    //Updated scene dimensions:
+    Scene scene = new Scene(root, 382, 515);
 
-        primaryStage.setTitle("Production Program");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+    primaryStage.setTitle("Production Program");
+    primaryStage.setScene(scene);
+    primaryStage.show();
+  }
 
 }
