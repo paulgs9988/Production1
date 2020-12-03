@@ -7,7 +7,7 @@ and then allows him/her to create "Production Runs" that are documented in anoth
 functionality, but enables a user to create his/her username and email address and enter a desired password.
 
 Visuals:
-Please see the "docs" folder in the Githup Repository for gif files of the program running (i.e. Production_produce_productionlog_tabs.gif).
+Please see the "docs" folder in the Githup Repository for gif files of the program running.
 ![](Production_produce_productionlog_tabs.gif)
 ![](Production_productline_tab.gif)
 
